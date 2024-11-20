@@ -24,7 +24,7 @@ const RegistroPage = () => {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.mensaje || 'No se pudo registrar el usuario'}`);
             } else {
-                alert('Registro exitoso. Ahora puedes iniciar sesión.');
+                console.log('Registro exitoso. Ahora puedes iniciar sesión.');
             }
         } catch (error) {
             console.error('Error:', error);

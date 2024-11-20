@@ -69,10 +69,12 @@ const NotasPage = () => {
                         <h3>{nota.titulo}</h3>
                         <p>Descripción: {nota.descripcion}</p>
                         <p>Calificación: {nota.calificacion}</p>
+                        <p>Estudiante: {nota.estudiante?.nombre || 'N/A'}</p> {/* Nombre del estudiante */}
                         <p>Profesor: {nota.profesor?.nombre || 'N/A'}</p>
                     </li>
                 ))}
             </ul>
+
         </div>
     );
 }   

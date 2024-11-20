@@ -25,15 +25,8 @@ const LoginPage = () => {
     
             if (response.ok) {
                 login(data.token); // Usamos el contexto para manejar el inicio de sesión
-                alert('Inicio de sesión exitoso');
-                
-                // Redirigir según el rol del usuario
-                const decodedToken = JSON.parse(atob(data.token.split('.')[1])); // Decodificar JWT manualmente
-                if (decodedToken.rol === 'profesor') {
-                    navigate('/notas'); // Redirigir a la página de notas del profesor
-                } else if (decodedToken.rol === 'estudiante') {
-                    navigate('/mis-notas'); // Redirigir a la página de notas del estudiante
-                }
+                console.log('Inicio de sesión exitoso');
+                navigate('/homeLogueado'); // Redirigir a la página centralizada
             } else {
                 alert(data.mensaje || 'Error al iniciar sesión');
             }
@@ -42,6 +35,7 @@ const LoginPage = () => {
             alert('Hubo un problema al iniciar sesión');
         }
     };
+    
     
 
     return (

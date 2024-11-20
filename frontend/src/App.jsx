@@ -4,7 +4,7 @@ import  AuthContext  from './context/AuthContext'; // Contexto de autenticación
 import LoginPage from './pages/LoginPage';
 import RegistroPage from './pages/RegistroPage';
 import NotasPage from './pages/NotasPage';
-import EstudiantesPage from './pages/EstudiantesPage';
+
 import ErrorPage from './pages/ErrorPage';
 import PropTypes from 'prop-types';
 import Home from './pages/Home'
@@ -13,13 +13,16 @@ import EstudiantesListPage from './pages/EstudiantesListPage';
 import AgregarNotaPage from './pages/AgregarNotaPage';
 import ActualizarNotaPage from './pages/ActualizarNotaPage';
 import NotasEstudiantePage from './pages/NotasEstudiantePage';
+import HomeLogueado from './pages/HomeLogueado';
 
-
-// Componente para proteger rutas según el rol
 const RutaProtegida = ({ element, rolesPermitidos }) => {
-    const { usuario } = useContext(AuthContext);
+    const { usuario, isAuthenticated, loading } = useContext(AuthContext);
 
-    if (!usuario) {
+    if (loading) {
+        return <div>Cargando...</div>; // Muestra un indicador de carga mientras se verifica el estado
+    }
+
+    if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }
 
@@ -29,11 +32,11 @@ const RutaProtegida = ({ element, rolesPermitidos }) => {
 
     return element;
 };
-RutaProtegida.propTypes = {
-  element: PropTypes.element.isRequired, // Se asegura de que 'element' sea un componente React válido
-  rolesPermitidos: PropTypes.arrayOf(PropTypes.string).isRequired // Se asegura de que 'rolesPermitidos' sea un array de strings
-};
 
+RutaProtegida.propTypes = {
+    element: PropTypes.element.isRequired,
+    rolesPermitidos: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 const App = () => {
     return (
@@ -44,6 +47,17 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/registro" element={<RegistroPage />} />
+
+                {/* Página centralizada después del login */}
+                <Route
+                    path="/homeLogueado"
+                    element={
+                        <RutaProtegida
+                            element={<HomeLogueado />}
+                            rolesPermitidos={['profesor', 'estudiante']}
+                        />
+                    }
+                />
 
                 {/* Rutas protegidas */}
                 <Route
@@ -56,50 +70,38 @@ const App = () => {
                     }
                 />
 
-
-
-<Route
-    path="/profesor/estudiantes"
-    element={
-        <RutaProtegida
-            element={<EstudiantesListPage />}
-            rolesPermitidos={['profesor']}
-        />
-    }
-/>
-<Route
-    path="/profesor/estudiantes/:id/agregar-nota"
-    element={
-        <RutaProtegida
-            element={<AgregarNotaPage />}
-            rolesPermitidos={['profesor']}
-        />
-    }
-/>
-<Route
-    path="/profesor/estudiantes/:id/actualizar-nota/:notaId"
-    element={
-        <RutaProtegida
-            element={<ActualizarNotaPage />}
-            rolesPermitidos={['profesor']}
-        />
-    }
-/>
-<Route
-    path="/profesor/estudiantes/:id/ver-notas"
-    element={
-        <RutaProtegida
-            element={<NotasEstudiantePage />}
-            rolesPermitidos={['profesor']}
-        />
-    }
-/>
-
                 <Route
-                    path="/estudiantes"
+                    path="/profesor/estudiantes"
                     element={
                         <RutaProtegida
-                            element={<EstudiantesPage />}
+                            element={<EstudiantesListPage />}
+                            rolesPermitidos={['profesor']}
+                        />
+                    }
+                />
+                <Route
+                    path="/profesor/estudiantes/:id/agregar-nota"
+                    element={
+                        <RutaProtegida
+                            element={<AgregarNotaPage />}
+                            rolesPermitidos={['profesor']}
+                        />
+                    }
+                />
+                <Route
+                    path="/profesor/estudiantes/:id/actualizar-nota/:notaId"
+                    element={
+                        <RutaProtegida
+                            element={<ActualizarNotaPage />}
+                            rolesPermitidos={['profesor']}
+                        />
+                    }
+                />
+                <Route
+                    path="/profesor/estudiantes/:id/ver-notas"
+                    element={
+                        <RutaProtegida
+                            element={<NotasEstudiantePage />}
                             rolesPermitidos={['profesor']}
                         />
                     }
@@ -114,6 +116,7 @@ const App = () => {
                         />
                     }
                 />
+
 
                 {/* Ruta por defecto (Error 404) */}
                 <Route path="*" element={<ErrorPage />} />

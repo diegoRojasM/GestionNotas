@@ -1,29 +1,33 @@
 import { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {jwtDecode} from 'jwt-decode'; // Asegúrate de que está importado correctamente como `default`
+import { jwtDecode } from 'jwt-decode'; // Mantén tu importación actual
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-    const [usuario, setUsuario] = useState(null); // Información del usuario, incluido el rol
+    const [usuario, setUsuario] = useState(null); // Información del usuario
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true); // Estado para verificar la carga inicial
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const decodedToken = jwtDecode(token); // Decodificar el token JWT para extraer datos
+                const decodedToken = jwtDecode(token);
+
+                // Si el token es válido, mantén el usuario y autenticación
                 setUsuario({
                     id: decodedToken.id,
                     rol: decodedToken.rol,
-                    nombre: decodedToken.nombre, // Incluye el nombre del usuario
+                    nombre: decodedToken.nombre, // Asume que el nombre viene en el token
                 });
                 setIsAuthenticated(true);
             } catch (error) {
                 console.error('Error al decodificar el token:', error);
-                logout(); // Si el token es inválido, desloguea al usuario
+                logout(); // Si falla el token, desloguea
             }
         }
+        setLoading(false); // Indicador de carga finalizado
     }, []);
 
     const login = (token) => {
@@ -33,7 +37,7 @@ export function AuthProvider({ children }) {
             setUsuario({
                 id: decodedToken.id,
                 rol: decodedToken.rol,
-                nombre: decodedToken.nombre, // Incluye el nombre al guardar el usuario
+                nombre: decodedToken.nombre, // Asume que el nombre viene en el token
             });
             setIsAuthenticated(true);
         } catch (error) {
@@ -48,7 +52,7 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ usuario, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ usuario, isAuthenticated, loading, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

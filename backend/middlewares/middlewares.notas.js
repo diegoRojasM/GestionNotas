@@ -34,21 +34,21 @@ const registrarNota = async (req, res) => {
   }
 };
 
-// Obtener notas (diferente para estudiantes y profesores)
+// Obtener nota// Obtener notas (diferente para estudiantes y profesores)
 const obtenerNotas = async (req, res) => {
   try {
     const { rol, id } = req.usuario;
 
     let notas;
     if (rol === 'profesor') {
-      // Si es profesor, puede ver todas las notas
+      // Si es profesor, puede ver todas las notas, incluyendo detalles del estudiante
       notas = await Nota.find()
-        .populate('estudiante', 'nombre correo')
-        .populate('profesor', 'nombre correo');
+        .populate('estudiante', 'nombre correo') // Agrega 'nombre' del estudiante
+        .populate('profesor', 'nombre correo'); // Agrega 'nombre' del profesor
     } else if (rol === 'estudiante') {
       // Si es estudiante, solo puede ver sus propias notas
       notas = await Nota.find({ estudiante: id })
-        .populate('profesor', 'nombre correo');
+        .populate('profesor', 'nombre correo'); // Agrega 'nombre' del profesor
     } else {
       return res.status(403).json({ mensaje: 'Acceso denegado.' });
     }
@@ -58,6 +58,7 @@ const obtenerNotas = async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener las notas.', error });
   }
 };
+
 
 // Actualizar una nota (solo para profesores)
 const actualizarNota = async (req, res) => {
