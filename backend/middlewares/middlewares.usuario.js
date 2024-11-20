@@ -45,7 +45,7 @@ const iniciarSesion = async (req, res) => {
 
     // Generar un token JWT
     const token = jwt.sign(
-      { id: usuario._id, rol: usuario.rol },
+      { id: usuario._id, rol: usuario.rol, nombre: usuario.nombre }, // Incluye el nombre
       process.env.JWT_SECRET,
       { expiresIn: '1h' } // Token válido por 1 hora
     );
@@ -56,4 +56,15 @@ const iniciarSesion = async (req, res) => {
   }
 };
 
-module.exports = { registrarUsuario, iniciarSesion };
+// Obtener todos los estudiantes
+const obtenerEstudiantes = async (req, res) => {
+  try {
+      const estudiantes = await Usuario.find({ rol: 'estudiante' }).select('-contrasena'); // Excluye la contraseña
+      res.json(estudiantes);
+  } catch (error) {
+      res.status(500).json({ mensaje: 'Error al obtener estudiantes', error });
+  }
+};
+
+
+module.exports = { registrarUsuario, iniciarSesion, obtenerEstudiantes  };

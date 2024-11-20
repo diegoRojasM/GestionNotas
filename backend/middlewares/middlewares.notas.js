@@ -23,7 +23,12 @@ const registrarNota = async (req, res) => {
 
     await nuevaNota.save();
 
-    res.status(201).json({ mensaje: 'Nota registrada exitosamente.', nota: nuevaNota });
+    // Poblamos la nota recién creada para devolver los datos completos
+    const notaGuardada = await Nota.findById(nuevaNota._id)
+      .populate('estudiante', 'nombre correo')
+      .populate('profesor', 'nombre correo');
+
+    res.status(201).json({ mensaje: 'Nota registrada exitosamente.', nota: notaGuardada });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al registrar la nota.', error });
   }
@@ -37,10 +42,13 @@ const obtenerNotas = async (req, res) => {
     let notas;
     if (rol === 'profesor') {
       // Si es profesor, puede ver todas las notas
-      notas = await Nota.find().populate('estudiante', 'nombre correo').populate('profesor', 'nombre correo');
+      notas = await Nota.find()
+        .populate('estudiante', 'nombre correo')
+        .populate('profesor', 'nombre correo');
     } else if (rol === 'estudiante') {
       // Si es estudiante, solo puede ver sus propias notas
-      notas = await Nota.find({ estudiante: id }).populate('profesor', 'nombre correo');
+      notas = await Nota.find({ estudiante: id })
+        .populate('profesor', 'nombre correo');
     } else {
       return res.status(403).json({ mensaje: 'Acceso denegado.' });
     }
@@ -61,7 +69,7 @@ const actualizarNota = async (req, res) => {
       id,
       { titulo, descripcion, calificacion },
       { new: true } // Retorna la nota actualizada
-    );
+    ).populate('estudiante', 'nombre correo').populate('profesor', 'nombre correo'); // Popula los datos actualizados
 
     if (!notaActualizada) {
       return res.status(404).json({ mensaje: 'Nota no encontrada.' });

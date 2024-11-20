@@ -1,9 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {jwtDecode} from 'jwt-decode';
-
-
-// Decodificador de JWT para obtener datos del token
+import {jwtDecode} from 'jwt-decode'; // Asegúrate de que está importado correctamente como `default`
 
 const AuthContext = createContext();
 
@@ -15,12 +12,16 @@ export function AuthProvider({ children }) {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const decodedToken = jwtDecode(token); // Decodificar el token JWT para extraer el usuario y rol
-                setUsuario({ id: decodedToken.id, rol: decodedToken.rol });
+                const decodedToken = jwtDecode(token); // Decodificar el token JWT para extraer datos
+                setUsuario({
+                    id: decodedToken.id,
+                    rol: decodedToken.rol,
+                    nombre: decodedToken.nombre, // Incluye el nombre del usuario
+                });
                 setIsAuthenticated(true);
             } catch (error) {
                 console.error('Error al decodificar el token:', error);
-                logout(); // Si el token es inválido, se deslogea
+                logout(); // Si el token es inválido, desloguea al usuario
             }
         }
     }, []);
@@ -29,7 +30,11 @@ export function AuthProvider({ children }) {
         try {
             const decodedToken = jwtDecode(token);
             localStorage.setItem('token', token);
-            setUsuario({ id: decodedToken.id, rol: decodedToken.rol });
+            setUsuario({
+                id: decodedToken.id,
+                rol: decodedToken.rol,
+                nombre: decodedToken.nombre, // Incluye el nombre al guardar el usuario
+            });
             setIsAuthenticated(true);
         } catch (error) {
             console.error('Error al decodificar el token durante login:', error);

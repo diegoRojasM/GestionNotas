@@ -1,4 +1,4 @@
-import  { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AuthContext from '../context/AuthContext';
@@ -6,7 +6,7 @@ import AuthContext from '../context/AuthContext';
 const NotasPage = () => {
     const [notas, setNotas] = useState([]);
     const navigate = useNavigate();
-    const { usuario, logout } = useContext(AuthContext); // Acceso al contexto para obtener el rol
+    const { usuario, logout } = useContext(AuthContext);
 
     const cargarNotas = async () => {
         try {
@@ -38,14 +38,27 @@ const NotasPage = () => {
         navigate('/login');
     };
 
+    
+
+
     return (
         <div className="notas-container">
-            <h2>Mis Notas</h2>
             {usuario?.rol === 'profesor' && (
-                <p>Viendo todas las notas de todos los estudiantes</p>
+                <>
+                    <h2>Bienvenido Profesor {usuario.nombre}</h2>
+                    <p>Viendo todas las notas de todos los estudiantes</p>
+                    <div className="profesor-actions">
+                        <button onClick={() => navigate('/profesor/estudiantes')}>
+                            Ver Lista de Estudiantes
+                        </button>
+                    </div>
+                </>
             )}
             {usuario?.rol === 'estudiante' && (
-                <p>Viendo solo tus notas</p>
+                <>
+                    <h2>Notas de {usuario.nombre}</h2>
+                    <p>Viendo solo tus notas</p>
+                </>
             )}
             <button className="boton-logout" onClick={handleLogout}>
                 Cerrar Sesión
@@ -56,13 +69,12 @@ const NotasPage = () => {
                         <h3>{nota.titulo}</h3>
                         <p>Descripción: {nota.descripcion}</p>
                         <p>Calificación: {nota.calificacion}</p>
-                        <p>Estudiante: {nota.estudiante?.nombre || 'N/A'}</p>
                         <p>Profesor: {nota.profesor?.nombre || 'N/A'}</p>
                     </li>
                 ))}
             </ul>
         </div>
     );
-};
+}   
 
 export default NotasPage;

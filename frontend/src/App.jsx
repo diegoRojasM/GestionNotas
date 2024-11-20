@@ -9,6 +9,11 @@ import ErrorPage from './pages/ErrorPage';
 import PropTypes from 'prop-types';
 import Home from './pages/Home'
 
+import EstudiantesListPage from './pages/EstudiantesListPage';
+import AgregarNotaPage from './pages/AgregarNotaPage';
+import ActualizarNotaPage from './pages/ActualizarNotaPage';
+import NotasEstudiantePage from './pages/NotasEstudiantePage';
+
 
 // Componente para proteger rutas según el rol
 const RutaProtegida = ({ element, rolesPermitidos }) => {
@@ -50,6 +55,46 @@ const App = () => {
                         />
                     }
                 />
+
+
+
+<Route
+    path="/profesor/estudiantes"
+    element={
+        <RutaProtegida
+            element={<EstudiantesListPage />}
+            rolesPermitidos={['profesor']}
+        />
+    }
+/>
+<Route
+    path="/profesor/estudiantes/:id/agregar-nota"
+    element={
+        <RutaProtegida
+            element={<AgregarNotaPage />}
+            rolesPermitidos={['profesor']}
+        />
+    }
+/>
+<Route
+    path="/profesor/estudiantes/:id/actualizar-nota/:notaId"
+    element={
+        <RutaProtegida
+            element={<ActualizarNotaPage />}
+            rolesPermitidos={['profesor']}
+        />
+    }
+/>
+<Route
+    path="/profesor/estudiantes/:id/ver-notas"
+    element={
+        <RutaProtegida
+            element={<NotasEstudiantePage />}
+            rolesPermitidos={['profesor']}
+        />
+    }
+/>
+
                 <Route
                     path="/estudiantes"
                     element={
